@@ -1,0 +1,16 @@
+﻿"""Write a program that asks the user to input two numbers and performs
+addition, subtraction, multiplication, and modulus on them. Output all
+the results."""
+
+# Arithmetic Operators
+a = 10
+b = 5
+add = a + b # Addition
+sub = a - b # Subtraction
+mul = a * b # Multiplication
+div = a / b # Division
+mod = a % b # Modulus
+exp = a ** b # Exponentiation
+
+print("Addition: ", add (10+5)
+

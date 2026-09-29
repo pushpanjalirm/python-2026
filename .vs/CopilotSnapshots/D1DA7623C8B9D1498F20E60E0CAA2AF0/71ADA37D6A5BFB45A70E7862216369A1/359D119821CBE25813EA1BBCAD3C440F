@@ -1,0 +1,128 @@
+﻿class TicTacToe:
+    def __init__(self):
+        # board positions: 0..8
+        self.board = [' '] * 9
+        self.current_player = 'X'  # human or first player
+        self.game_over = False
+        self.winner = None
+
+    def print_board(self):
+        b = self.board
+        print(f"{b[0]} | {b[1]} | {b[2]}")
+        print("-" * 9)
+        print(f"{b[3]} | {b[4]} | {b[5]}")
+        print("-" * 9)
+        print(f"{b[6]} | {b[7]} | {b[8]}")
+
+    def available_moves(self):
+        return [i for i, v in enumerate(self.board) if v == ' ']
+
+    def make_move(self, pos, player):
+        if pos < 0 or pos > 8:
+            return False
+        if self.board[pos] != ' ':
+            return False
+        self.board[pos] = player
+        return True
+
+    def check_winner(self):
+        b = self.board
+        # rows
+        for i in range(0, 9, 3):
+            if b[i] != ' ' and b[i] == b[i+1] == b[i+2]:
+                return b[i]
+        # cols
+        for i in range(3):
+            if b[i] != ' ' and b[i] == b[i+3] == b[i+6]:
+                return b[i]
+        # diagonals
+        if b[0] != ' ' and b[0] == b[4] == b[8]:
+            return b[0]
+        if b[2] != ' ' and b[2] == b[4] == b[6]:
+            return b[2]
+        # draw
+        if ' ' not in b:
+            return 'Draw'
+        return None
+
+    def minimax(self, board, depth, is_maximizing):
+        result = self.check_winner()
+        if result == 'O':
+            return 1
+        elif result == 'X':
+            return -1
+        elif result == 'Draw':
+            return 0
+
+        if is_maximizing:
+            best_score = -float('inf')
+            for move in self.available_moves():
+                board[move] = 'O'
+                score = self.minimax(board, depth + 1, False)
+                board[move] = ' '
+                best_score = max(score, best_score)
+            return best_score
+        else:
+            best_score = float('inf')
+            for move in self.available_moves():
+                board[move] = 'X'
+                score = self.minimax(board, depth + 1, True)
+                board[move] = ' '
+                best_score = min(score, best_score)
+            return best_score
+
+    def ai_move(self):
+        best_score = -float('inf')
+        best_move = None
+        for move in self.available_moves():
+            self.board[move] = 'O'
+            score = self.minimax(self.board, 0, False)
+            self.board[move] = ' '
+            if score > best_score:
+                best_score = score
+                best_move = move
+        return best_move
+
+    def play(self):
+        print("Welcome to Tic-Tac-Toe!")
+        print("You are X, AI is O. Enter 0-8 to move.")
+        print("0 | 1 | 2")
+        print("3 | 4 | 5")
+        print("6 | 7 | 8")
+
+        while not self.game_over:
+            self.print_board()
+            if self.current_player == 'X':
+                try:
+                    move = int(input("Your move (0-8): "))
+                except ValueError:
+                    print("Please enter a valid number.")
+                    continue
+                if not self.make_move(move, 'X'):
+                    print("Invalid move or occupied. Try again.")
+                    continue
+            else:
+                print("AI is thinking...")
+                move = self.ai_move()
+                if move is None:
+                    print("No moves available for AI")
+                    break
+                self.make_move(move, 'O')
+                print(f"AI chooses position {move}")
+
+            result = self.check_winner()
+            if result:
+                self.game_over = True
+                self.winner = result
+                self.print_board()
+                if result == 'Draw':
+                    print("It's a draw!")
+                else:
+                    print(f"{result} wins!")
+            else:
+                self.current_player = 'O' if self.current_player == 'X' else 'X'
+
+
+if __name__ == '__main__':
+    game = TicTacToe()
+    game.play()
